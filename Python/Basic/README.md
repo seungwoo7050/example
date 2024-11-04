@@ -4,7 +4,7 @@ This overview provides a complete introduction to Python's core principles, enri
 
 ---
 
-### Table of Contents
+## Table of Contents
 1. **Variables and Data Types**
 2. **Operators**
 3. **Basic Regex**

@@ -4,12 +4,12 @@ This **Student Management System** project is a console-based Python application
 
 ---
 
-### Table of Contents
+## Table of Contents
 
 1. **Project Purpose**
 2. **Requirements and Planning**
 3. **Step-by-Step Code Walkthrough**
-4. **Concepts and Questions**
+4. **Concepts**
 5. **My Questions**
 6. **Common Questions about This Project**
 7. **Main Reference Links**
@@ -180,7 +180,7 @@ if __name__ == "__main__":
 
 ---
 
-## 4. Concepts and Questions
+## 4. Concepts
 
 1. **Classes and Objects**: The `Student` class demonstrates encapsulation, where all student data and behaviors are stored within each `Student` instance.
 2. **Methods**: The `update_details()` method allows us to modify the student's name or age.

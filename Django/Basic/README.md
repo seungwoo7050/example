@@ -4,7 +4,7 @@ This guide offers an in-depth look at Django's foundational elements, enriched w
 
 ---
 
-### Table of Contents
+## Table of Contents
 
 1. **Introduction to Django**
 2. **Setting up Django**

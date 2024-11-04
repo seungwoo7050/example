@@ -4,12 +4,12 @@ This **To-Do List** project is a console-based Python application for managing t
 
 ---
 
-### Table of Contents
+## Table of Contents
 
 1. **Project Purpose**
 2. **Requirements and Planning**
 3. **Step-by-Step Code Walkthrough**
-4. **Concepts and Questions**
+4. **Concepts**
 5. **My Questions**
 6. **Common Questions about This Project**
 7. **Main Reference Links**
@@ -156,7 +156,7 @@ if __name__ == "__main__":
 
 ---
 
-## 4. Concepts and Questions
+## 4. Concepts
 
 1. **Functions**: Each feature of the to-do list is encapsulated in a separate function, which keeps the code modular and organized.
 2. **Lists**: The list `tasks` is used to store all tasks, showcasing list operations like adding, updating, and deleting elements.
