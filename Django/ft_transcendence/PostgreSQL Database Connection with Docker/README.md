@@ -155,7 +155,7 @@ In this project, you’ll learn:
 2. **Verify the setup by running Django’s development server**:
 
 	```bash
-	python manage.py runserver
+	python3 manage.py runserver
 	```
 
 	Check `http://127.0.0.1:8000` in your browser to ensure Django is running correctly.
@@ -416,8 +416,8 @@ In this project, you’ll learn:
 
 	- For example:
 		```bash
-		python manage.py makemigrations
-		python manage.py migrate
+		python3 manage.py makemigrations
+		python3 manage.py migrate
 		```
 
 3. **When to Use Django vs PostgreSQL Directly**:

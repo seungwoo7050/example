@@ -113,7 +113,7 @@ When you run `python manage.py startapp user_management`, Django creates a basic
 1. **Create a New App**:
 
     ```bash
-    python manage.py startapp user_management
+    python3 manage.py startapp user_management
     ```
 
 2. **Purpose of Each File in the App**:
@@ -272,7 +272,7 @@ Once you’ve completed all the steps, here’s how to check if everything is wo
 1. **Start the Django Server**:
 
     ```bash
-    python manage.py runserver
+    python3 manage.py runserver
     ```
 
 2. **Visit the Registration Page**:
