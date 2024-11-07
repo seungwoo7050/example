@@ -590,16 +590,16 @@ Model managers allow you to customize how objects are retrieved from the databas
 from django.db import models
 
 class PublishedManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(is_published=True)
+	def get_queryset(self):
+		return super().get_queryset().filter(is_published=True)
 
 class Article(models.Model):
-    title = models.CharField(max_length=200)
-    content = models.TextField()
-    is_published = models.BooleanField(default=False)
+	title = models.CharField(max_length=200)
+	content = models.TextField()
+	is_published = models.BooleanField(default=False)
 
-    objects = models.Manager()       # The default manager
-    published = PublishedManager()   # Our custom manager
+	objects = models.Manager()       # The default manager
+	published = PublishedManager()   # Our custom manager
 ```
 
 #### Usage:
@@ -734,16 +734,16 @@ In `settings.py`, define additional databases:
 
 ```python
 DATABASES = {
-    'default': {  # Primary database
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'primary_db',
-        # Other connection parameters
-    },
-    'replica': {  # Secondary database
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'replica_db',
-        # Other connection parameters
-    },
+	'default': {  # Primary database
+		'ENGINE': 'django.db.backends.postgresql',
+		'NAME': 'primary_db',
+		# Other connection parameters
+	},
+	'replica': {  # Secondary database
+		'ENGINE': 'django.db.backends.postgresql',
+		'NAME': 'replica_db',
+		# Other connection parameters
+	},
 }
 ```
 
@@ -754,14 +754,14 @@ Create a database router to control database operations:
 ```python
 # myapp/db_routers.py
 class DatabaseRouter:
-    def db_for_read(self, model, **hints):
-        return 'replica'  # Route all read operations to the replica database
+	def db_for_read(self, model, **hints):
+		return 'replica'  # Route all read operations to the replica database
 
-    def db_for_write(self, model, **hints):
-        return 'default'  # Route all write operations to the default database
+	def db_for_write(self, model, **hints):
+		return 'default'  # Route all write operations to the default database
 
-    def allow_migrate(self, db, app_label, model_name=None, **hints):
-        return True  # Allow migrations on all databases
+	def allow_migrate(self, db, app_label, model_name=None, **hints):
+		return True  # Allow migrations on all databases
 ```
 
 Register the router in `settings.py`:
@@ -782,11 +782,11 @@ Wrap database operations within an atomic transaction:
 from django.db import transaction
 
 def some_view(request):
-    with transaction.atomic():
-        # All operations inside this block are executed in a single transaction
-        # If an error occurs, the transaction is rolled back
-        account.withdraw(100)
-        account.save()
+	with transaction.atomic():
+		# All operations inside this block are executed in a single transaction
+		# If an error occurs, the transaction is rolled back
+		account.withdraw(100)
+		account.save()
 ```
 
 #### Setting Isolation Levels
@@ -795,12 +795,12 @@ Adjust the transaction isolation level in the database settings:
 
 ```python
 DATABASES = {
-    'default': {
-        # ...
-        'OPTIONS': {
-            'isolation_level': 'serializable',
-        },
-    },
+	'default': {
+		# ...
+		'OPTIONS': {
+			'isolation_level': 'serializable',
+		},
+	},
 }
 ```
 
@@ -1314,13 +1314,13 @@ Here are some of the most frequently used middleware classes in Django, which ca
 ```python
 # settings.py
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'django.middleware.security.SecurityMiddleware',
+	'django.contrib.sessions.middleware.SessionMiddleware',
+	'django.middleware.common.CommonMiddleware',
+	'django.middleware.csrf.CsrfViewMiddleware',
+	'django.contrib.auth.middleware.AuthenticationMiddleware',
+	'django.contrib.messages.middleware.MessageMiddleware',
+	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 ```
 ### Overview of Key Middleware
@@ -1342,13 +1342,13 @@ Here’s an example of custom middleware that adds a custom header to all respon
 ```python
 # myapp/middleware.py
 class CustomHeaderMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
+	def __init__(self, get_response):
+		self.get_response = get_response
 
-    def __call__(self, request):
-        response = self.get_response(request)
-        response['X-Custom-Header'] = 'Custom Value'
-        return response
+	def __call__(self, request):
+		response = self.get_response(request)
+		response['X-Custom-Header'] = 'Custom Value'
+		return response
 ```
 
 To register it, add the middleware class to the `MIDDLEWARE` list in `settings.py`:
@@ -1965,8 +1965,8 @@ from django.http import JsonResponse
 
 @protected_resource()
 def api_resource(request):
-    data = {'message': 'This is a protected resource'}
-    return JsonResponse(data)
+	data = {'message': 'This is a protected resource'}
+	return JsonResponse(data)
 ```
 
 #### Configuring Grant Types and Tokens
@@ -1976,17 +1976,17 @@ Customize OAuth2.0 settings:
 ```python
 # settings.py
 OAUTH2_PROVIDER = {
-    'ACCESS_TOKEN_EXPIRE_SECONDS': 3600,
-    'REFRESH_TOKEN_EXPIRE_SECONDS': 86400,
-    'AUTHORIZATION_CODE_EXPIRE_SECONDS': 300,
-    'ALLOWED_GRANT_TYPES': [
-        'authorization-code',
-        'password',
-        'client-credentials',
-        'implicit',
-        'refresh-token',
-    ],
-    'SCOPES': {'read': 'Read scope', 'write': 'Write scope'},
+	'ACCESS_TOKEN_EXPIRE_SECONDS': 3600,
+	'REFRESH_TOKEN_EXPIRE_SECONDS': 86400,
+	'AUTHORIZATION_CODE_EXPIRE_SECONDS': 300,
+	'ALLOWED_GRANT_TYPES': [
+		'authorization-code',
+		'password',
+		'client-credentials',
+		'implicit',
+		'refresh-token',
+	],
+	'SCOPES': {'read': 'Read scope', 'write': 'Write scope'},
 }
 ```
 
@@ -1997,12 +1997,12 @@ If you're using Django REST Framework, integrate OAuth2.0 authentication:
 ```python
 # settings.py
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
+	'DEFAULT_AUTHENTICATION_CLASSES': (
+		'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+	),
+	'DEFAULT_PERMISSION_CLASSES': (
+		'rest_framework.permissions.IsAuthenticated',
+	),
 }
 ```
 
@@ -2083,7 +2083,7 @@ from django.views.generic import TemplateView
 from two_factor.views import OTPRequiredMixin
 
 class ProtectedView(OTPRequiredMixin, TemplateView):
-    template_name = 'protected.html'
+	template_name = 'protected.html'
 ```
 
 For function-based views:
@@ -2093,8 +2093,8 @@ from two_factor.decorators import otp_required
 
 @otp_required
 def protected_view(request):
-    # Your view logic
-    pass
+	# Your view logic
+	pass
 ```
 
 #### Configuring SMS or Call Gateways (Optional)
@@ -2315,13 +2315,13 @@ Configure the authentication classes in `settings.py`:
 ```python
 # settings.py
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',  # Uses Django's session framework
-        'rest_framework.authentication.BasicAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  # Requires users to be authenticated
-    ],
+	'DEFAULT_AUTHENTICATION_CLASSES': [
+		'rest_framework.authentication.SessionAuthentication',  # Uses Django's session framework
+		'rest_framework.authentication.BasicAuthentication',
+	],
+	'DEFAULT_PERMISSION_CLASSES': [
+		'rest_framework.permissions.IsAuthenticated',  # Requires users to be authenticated
+	],
 }
 ```
 
@@ -2345,9 +2345,9 @@ Control access at the view level using permission classes.
 from rest_framework.permissions import IsAuthenticated
 
 class PersonViewSet(viewsets.ModelViewSet):
-    queryset = Person.objects.all()
-    serializer_class = PersonSerializer
-    permission_classes = [IsAuthenticated]
+	queryset = Person.objects.all()
+	serializer_class = PersonSerializer
+	permission_classes = [IsAuthenticated]
 ```
 
 #### Custom Permissions
@@ -2358,17 +2358,17 @@ Create custom permission classes by subclassing `rest_framework.permissions.Base
 from rest_framework.permissions import BasePermission
 
 class IsOwner(BasePermission):
-    def has_object_permission(self, request, view, obj):
-        return obj.owner == request.user
+	def has_object_permission(self, request, view, obj):
+		return obj.owner == request.user
 ```
 
 Apply the custom permission to a view:
 
 ```python
 class DocumentViewSet(viewsets.ModelViewSet):
-    queryset = Document.objects.all()
-    serializer_class = DocumentSerializer
-    permission_classes = [IsOwner]
+	queryset = Document.objects.all()
+	serializer_class = DocumentSerializer
+	permission_classes = [IsOwner]
 ```
 
 ### Throttling and Rate Limiting
@@ -2382,14 +2382,14 @@ Configure default throttling classes in `settings.py`:
 ```python
 # settings.py
 REST_FRAMEWORK = {
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.UserRateThrottle',
-        'rest_framework.throttling.AnonRateThrottle',
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'user': '1000/day',      # Authenticated users can make 1000 requests per day
-        'anon': '100/day',       # Unauthenticated users can make 100 requests per day
-    },
+	'DEFAULT_THROTTLE_CLASSES': [
+		'rest_framework.throttling.UserRateThrottle',
+		'rest_framework.throttling.AnonRateThrottle',
+	],
+	'DEFAULT_THROTTLE_RATES': {
+		'user': '1000/day',      # Authenticated users can make 1000 requests per day
+		'anon': '100/day',       # Unauthenticated users can make 100 requests per day
+	},
 }
 ```
 
@@ -2401,7 +2401,7 @@ Create custom throttle classes by subclassing `rest_framework.throttling.BaseThr
 from rest_framework.throttling import UserRateThrottle
 
 class BurstRateThrottle(UserRateThrottle):
-    scope = 'burst'
+	scope = 'burst'
 
 # settings.py
 REST_FRAMEWORK['DEFAULT_THROTTLE_CLASSES'].append('myapp.throttles.BurstRateThrottle')
@@ -2456,9 +2456,9 @@ from django.test import TestCase
 from .models import Book
 
 class BookModelTest(TestCase):
-    def test_string_representation(self):
-        book = Book(title="Sample Book")
-        self.assertEqual(str(book), book.title)
+	def test_string_representation(self):
+		book = Book(title="Sample Book")
+		self.assertEqual(str(book), book.title)
 ```
 
 ### 6. Manage Sensitive Information Securely
@@ -2496,10 +2496,10 @@ Caching can significantly improve performance by storing frequently accessed dat
 ```python
 # Example cache settings
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-    }
+	'default': {
+		'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+		'LOCATION': '127.0.0.1:11211',
+	}
 }
 ```
 

@@ -9,19 +9,20 @@ This document details how a Django application processes a user request from sta
 1. **Introduction to Django’s Request-Response Flow**
 
 2. **Step-by-Step Request-Response Cycle**
-    - Step 1: User Action on the Front End
-    
-    - Step 2: URL Routing (`urls.py` and `urlpatterns`)
-    
-    - Step 3: View Processing (`views.py`)
-    
-    - Step 4: Form Validation and Handling (`forms.py`)
-    
-    - Step 5: Database Interaction (`models.py` and Django ORM)
-    
-    - Step 6: Template Rendering (HTML in `templates` Folder)
-    
-    - Step 7: Response Back to the User
+
+	- Step 1: User Action on the Front End
+	
+	- Step 2: URL Routing (`urls.py` and `urlpatterns`)
+	
+	- Step 3: View Processing (`views.py`)
+	
+	- Step 4: Form Validation and Handling (`forms.py`)
+	
+	- Step 5: Database Interaction (`models.py` and Django ORM)
+	
+	- Step 6: Template Rendering (HTML in `templates` Folder)
+	
+	- Step 7: Response Back to the User
 
 3. **Example Flow: User Registration Process in Django**
 
@@ -59,7 +60,7 @@ Understanding this flow is essential for building applications in Django, as it 
 
 2. **Browser Sends Request**: This action triggers a request sent by the browser to the server, including the requested URL and any accompanying data (like form data).
 
-    - For example, if a user clicks on a **Register** link, the browser sends a request to `http://127.0.0.1:8000/user/register/`.
+	- For example, if a user clicks on a **Register** link, the browser sends a request to `http://127.0.0.1:8000/user/register/`.
 
 ### Step 2: URL Routing (`urls.py` and `urlpatterns`)
 
@@ -76,12 +77,12 @@ Understanding this flow is essential for building applications in Django, as it 
 1. When a request is received, Django checks each URL pattern in `urlpatterns` to find a match for the requested URL.
 
 2. Each URL pattern uses the `path()` function to specify:
-    
-    - The **URL pattern** (e.g., `'/register/'`).
-    
-    - The **view function** to call (e.g., `views.register`).
-    
-    - An optional **name** (e.g., `name='register'`) that can be used to refer to the URL elsewhere in the code.
+	
+	- The **URL pattern** (e.g., `'/register/'`).
+	
+	- The **view function** to call (e.g., `views.register`).
+	
+	- An optional **name** (e.g., `name='register'`) that can be used to refer to the URL elsewhere in the code.
 
 #### Example of URL Routing: In `user_management/urls.py`, we define URLs for registering and updating profiles:
 
@@ -91,8 +92,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('register/', views.register, name='register'),
-    path('profile/', views.profile, name='profile'),
+	path('register/', views.register, name='register'),
+	path('profile/', views.profile, name='profile'),
 ]
 ```
 
@@ -107,10 +108,10 @@ urlpatterns = [
 1. **Receive the Request**: The view function receives the `request` object, which contains details about the HTTP request (e.g., `GET` or `POST`).
 
 2. **Process Data**:
-    
-    - For `GET` requests, views usually fetch and display data.
-    
-    - For `POST` requests, views often handle form submissions, validate input, and save data to the database.
+	
+	- For `GET` requests, views usually fetch and display data.
+	
+	- For `POST` requests, views often handle form submissions, validate input, and save data to the database.
 
 3. **Render a Template**: The view calls `render()` to return an HTML response, typically using a Django template.
 
@@ -122,24 +123,24 @@ from django.shortcuts import render, redirect
 from .forms import UserRegistrationForm
 
 def register(request):
-    if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
-        if form.is_valid():
-            new_user = form.save(commit=False)
-            new_user.set_password(form.cleaned_data['password'])
-            new_user.save()
-            return redirect('profile')
-    else:
-        form = UserRegistrationForm()
-    return render(request, 'user_management/register.html', {'form': form})
+	if request.method == 'POST':
+		form = UserRegistrationForm(request.POST)
+		if form.is_valid():
+			new_user = form.save(commit=False)
+			new_user.set_password(form.cleaned_data['password'])
+			new_user.save()
+			return redirect('profile')
+	else:
+		form = UserRegistrationForm()
+	return render(request, 'user_management/register.html', {'form': form})
 ```
 
 - **Explanation**:
-    - **Request Check**: If the request is `POST`, the form is populated with the submitted data and processed; otherwise, an empty form is displayed.
-    
-    - **Form Validation**: `is_valid()` checks that the input meets all requirements.
-    
-    - **Rendering**: `render()` loads the `register.html` template with the form data.
+	- **Request Check**: If the request is `POST`, the form is populated with the submitted data and processed; otherwise, an empty form is displayed.
+	
+	- **Form Validation**: `is_valid()` checks that the input meets all requirements.
+	
+	- **Rendering**: `render()` loads the `register.html` template with the form data.
 
 ### Step 4: Form Validation and Handling (`forms.py`)
 
@@ -159,23 +160,23 @@ from django import forms
 from django.contrib.auth.models import User
 
 class UserRegistrationForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
-    password2 = forms.CharField(widget=forms.PasswordInput)
+	password = forms.CharField(widget=forms.PasswordInput)
+	password2 = forms.CharField(widget=forms.PasswordInput)
 
-    class Meta:
-        model = User
-        fields = ('username', 'first_name', 'email')
+	class Meta:
+		model = User
+		fields = ('username', 'first_name', 'email')
 
-    def clean_password2(self):
-        if self.cleaned_data['password'] != self.cleaned_data['password2']:
-            raise forms.ValidationError('Passwords do not match')
-        return self.cleaned_data['password2']
+	def clean_password2(self):
+		if self.cleaned_data['password'] != self.cleaned_data['password2']:
+			raise forms.ValidationError('Passwords do not match')
+		return self.cleaned_data['password2']
 ```
 
 - **Explanation**:
-    - **Meta Class**: Specifies the `User` model and fields to display on the form.
+	- **Meta Class**: Specifies the `User` model and fields to display on the form.
 
-    - **Custom Validation**: `clean_password2` ensures that the passwords match.
+	- **Custom Validation**: `clean_password2` ensures that the passwords match.
 
 ### Step 5: Database Interaction (`models.py` and Django ORM)
 
@@ -214,9 +215,9 @@ new_user.save()  # Saves the new user to the database
 <!-- user_management/templates/user_management/register.html -->
 <h2>Register</h2>
 <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button type="submit">Register</button>
 </form>
 ```
 
