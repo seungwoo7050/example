@@ -63,13 +63,33 @@ This project builds on standard OAuth by customizing the process for 42 API and 
 
 ### Key Setup Steps
 
-1. Set up and configure Redis for secure token storage.
+1. **Redis Configuration**:
 
-2. Register your application with the 42 API to retrieve client credentials.
+	- Set up Redis for secure, fast token storage with built-in expiration handling.
 
-3. Define the custom OAuth authorization and token exchange flow with Django views.
+	- Confirm Redis connectivity with Django to enable seamless integration for token caching.
 
-4. Customize user data retrieval and handling to fit your app’s requirements.
+2. **OAuth 2.0 Credentials and Flow**:
+
+	- Register your application with the 42 API and obtain `CLIENT_ID` and `CLIENT_SECRET`.
+
+	- Define the custom OAuth authorization and token exchange flow in Django views.
+
+3. **Secure Token Storage**:
+
+	- Use Redis to securely store tokens, with automatic expiration and retrieval mechanisms.
+
+	- Implement optional token refresh logic to handle access token expiration and maintain session continuity.
+
+4. **Customized Data Retrieval**:
+
+	- Configure user data retrieval to match application requirements, such as fetching profile info, email, or campus details from the 42 API.
+
+5. **Debugging and Validation**:
+
+	- Integrate logging to capture OAuth flow events, errors, and user data retrieval.
+	
+	- Test OAuth login, token storage, and Redis expiration to confirm end-to-end functionality.
 
 ---
 
@@ -86,13 +106,13 @@ This project builds on standard OAuth by customizing the process for 42 API and 
 2. **Install Redis and Requests Libraries**: Install `redis-py` and `requests` for Redis integration and HTTP requests:
 
 	```bash
-	pip install redis requests
+	pip3 install redis requests
 	```
 	
 3. **Update `requirements.txt`**:
 	
 	```bash
-	pip freeze > requirements.txt
+	pip3 freeze > requirements.txt
 	```
 
 ### Step 2: Configure Redis in Django Settings
@@ -142,7 +162,17 @@ You need a `CLIENT_ID` and `CLIENT_SECRET` from the 42 API to authorize users.
 
 	- Retrieve your `CLIENT_ID` and `CLIENT_SECRET`.
 
-2. **Store Credentials in Environment Variables or Settings**:
+2. **Store Credentials Securely in Environment Variables**:
+
+	Add the following to your environment variables (e.g., in `.env`):
+
+	```text
+	FT_CLIENT_ID=<your_client_id>
+	FT_CLIENT_SECRET=<your_client_secret>
+	```
+
+
+3. **Access Environment Variables in `settings.py`**:
 
 	```python
 	CLIENT_ID = os.getenv('FT_CLIENT_ID')
@@ -182,7 +212,7 @@ This view redirects the user to the 42 API authorization page, requesting access
 		authorization_url = (
 			f"https://api.intra.42.fr/oauth/authorize"
 			f"?client_id={settings.CLIENT_ID}&redirect_uri={settings.REDIRECT_URI}"
-			f"&response_type=code&scope=public profile email campus"
+			f"&response_type=code&scope=public"
 		)
 		return redirect(authorization_url)
 	```
@@ -292,7 +322,6 @@ else:
     # Handle case where refresh token is missing or expired
     # Prompt user to log in again, or take other action
     return redirect('oauth_login')
-
 ```
 
 ### Step 7: Verify OAuth Integration

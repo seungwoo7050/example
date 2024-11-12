@@ -100,7 +100,7 @@ In this project, you’ll learn:
 1. **Create a project directory and initialize a virtual environment**:
 
 	```bash
-	mkdir ft_transcendence_project && cd ft_transcendence_project
+	mkdir project_directory && cd project_directory
 	python3 -m venv venv
 	```
 
@@ -118,13 +118,13 @@ In this project, you’ll learn:
 	1. **Install Django in your virtual environment**:
 
 		```bash
-		pip install django
+		pip3 install django psycopg2-binary django-environ
 		```
 
 	2. **Generate a `requirements.txt` file**:
 
 		```bash
-		pip freeze > requirements.txt
+		pip3 freeze > requirements.txt
 		```
 
 		This file will capture Django and other installed packages, ensuring consistent installation across environments.
@@ -144,12 +144,29 @@ In this project, you’ll learn:
 	pip install -r requirements.txt
 	```
 
-### Step 3: Create and Verify a New Django Project
+### Step 3: Secure Environment Variables
+
+1. **Create a `.env` File**:
+	
+	- This file will store sensitive information such as database credentials and Django's secret key:
+	plaintext
+
+		```text
+		POSTGRES_DB=mydatabase
+		POSTGRES_USER=myuser
+		POSTGRES_PASSWORD=mypassword
+		SECRET_KEY='your-secret-key'
+		```
+
+2. **Add `.env` to** `.gitignore` to prevent it from being tracked in version control
+
+
+### Step 4: Create and Verify a New Django Project
 
 1. **Start a Django project**:
 
 	```bash
-	django-admin startproject myproject .
+	django-admin startproject project_name .
 	```
 
 2. **Verify the setup by running Django’s development server**:
@@ -162,7 +179,7 @@ In this project, you’ll learn:
 
 	**To stop the server**: Press `Ctrl + C` in the Terminal.
 
-### Step 4: Configure Docker and Docker Compose
+### Step 5: Configure Docker and Docker Compose
 
 1. **Create a `Dockerfile`**: In your project directory, create a Dockerfile to define the Docker image for your Django app.
 
@@ -170,10 +187,9 @@ In this project, you’ll learn:
 	# Dockerfile
 	FROM python:3.9-slim
 	ENV PYTHONUNBUFFERED=1
-	WORKDIR /code
-	COPY requirements.txt /code/
-	RUN pip install -r requirements.txt
-	COPY . /code/
+	WORKDIR /workdir
+	COPY . /workdir/
+	RUN pip install -r requirements.txt	
 	```
 
 2. **Create a `docker-compose.yml` file**: This file defines services for Django and PostgreSQL.
@@ -182,42 +198,58 @@ In this project, you’ll learn:
 	version: '3.9'
 
 	services:
-		db:
-			image: postgres
-			environment:
-				POSTGRES_DB: mydatabase
-				POSTGRES_USER: myuser
-				POSTGRES_PASSWORD: mypassword
-			volumes:
-			- postgres_data:/var/lib/postgresql/data
+	  db:
+	    image: postgres
+		environment:
+		  POSTGRES_DB: ${POSTGRES_DB}
+		  POSTGRES_USER: ${POSTGRES_USER}
+		  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+		healthcheck:
+		  test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+		  timeout: 5s
+		  retries: 5
+		volumes:
+		  - postgres_data:/var/lib/postgresql/data
+
+	  redis:
+	    image: redis
+		ports:
+		  - "6379:6379"
 
 		web:
-			build: .
-			command: python manage.py runserver 0.0.0.0:8000
-			volumes:
-				- .:/code
-			ports:
-				- "8000:8000"
-			environment:
-				- DJANGO_SETTINGS_MODULE=myproject.settings
-			depends_on:
-				- db
+		  build: .
+		  restart: always
+		  command: >
+		    sh -c "python manage.py makemigrations && 
+			       python manage.py migrate && 
+			       python manage.py runserver 0.0.0.0:8000"
+		  volumes:
+		    - .:/workdir
+		  ports:
+		    - "8000:8000"
+		  environment:
+		    - DJANGO_SETTINGS_MODULE=myproject.settings
+		  depends_on:
+		    db:
+		      condition: service_healthy
 
 	volumes:
 		postgres_data:
 	```
 
-### Step 5: Configure Django for PostgreSQL
-
-1. **Add PostgreSQL connection information in Django settings**: In `myproject/settings.py`, update the `DATABASES` setting:
+3. **Load Environment Variables**: Update Django’s `settings.py` to load variables securely:
 
 	```python
+	import environ
+	env = environ.Env()
+	env.read_env()	# Load from .env
+
 	DATABASES = {
 		'default': {
 		'ENGINE': 'django.db.backends.postgresql',
-		'NAME': 'mydatabase',
-		'USER': 'myuser',
-		'PASSWORD': 'mypassword',
+		'NAME': env('POSTGRES_DB'),
+		'USER': env('POSTGRES_USER'),
+		'PASSWORD': env('POSTGRES_PASSWORD'),
 		'HOST': 'db',
 		'PORT': '5432',
 		}
@@ -254,6 +286,74 @@ In this project, you’ll learn:
 		```bash
 		docker-compose down
 		```
+
+### Step7: Verify Database Connection
+
+After configuring Docker and setting up Django to use PostgreSQL, it's important to verify the database connection to ensure everything is working correctly. This step involves checking the database connection both directly through Django and via Docker.
+
+asd
+
+1. **Check Database Connection via Docker**
+	
+	- **Connect Directly to PostgreSQL Database**:
+
+		- Use Docker Compose to access the PostgreSQL container directly:
+			
+			```bash
+			docker-compose exec db psql -U myuser -d mydatabase
+			```
+	
+		- This command opens the PostgreSQL command-line interface within the container. From here, you can run SQL commands to check database contents, tables, etc. For instance:
+			
+			```sql
+			\dt
+			```
+	
+	- **Check Database Logs via Docker Compose**:
+	
+		- Use the following command to view PostgreSQL logs, which can help debug connection or setup issues:
+		
+			```bash
+			docker-compose logs db
+			```
+
+1. **Test a Simple Database Query via Django ORM**
+	
+	- **Create a Simple Model and Test Query (Optional)**:
+
+		- If you want an additional verification step, you can create a basic Django model, apply migrations, and try a test query:
+
+			- **Define a Model** in one of your Django apps, e.g., in `models.py`:
+			
+				```python
+				from django.db import models
+
+				class TestModel(models.Model):
+					name = models.CharField(max_length=100)
+
+					def __str__(self):
+						return self.name
+				```
+			
+			- Run the migrations to create this model's table:
+			
+				```bash
+				python3 manage.py makemigrations
+				python3 manage.py migrate
+				```
+
+			- Open the Django shell and attempt to create and retrieve an object:
+			
+				```bash
+				python3 manage.py shell
+				```
+				```python
+				from myapp.models import TestModel
+				test = TestModel.objects.create(name="Database Test")
+				print(TestModel.objects.all())
+				```
+
+			- If the query succeeds and returns the created object, the database setup is fully verified.
 
 ---
 
